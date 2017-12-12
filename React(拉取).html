@@ -1,0 +1,562 @@
+<!DOCTYPE html><html><head><title>React(拉取)</title><meta charset='utf-8'><link href='https://dn-maxiang.qbox.me/res-min/themes/marxico.css' rel='stylesheet'><style>
+.note-content  {font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif;}
+
+</style></head><body><div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h2 id="react拉取">React(拉取)</h2>
+
+<hr>
+
+<div><div class="toc"><div class="toc">
+<ul>
+<li><ul>
+<li><a href="#react拉取">React(拉取)</a><ul>
+<li><a href="#react">REACT</a><ul>
+<li><a href="#如何提高react组件的渲染效率">如何提高react组件的渲染效率</a></li>
+<li><a href="#redux">redux</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#redux中间件">REDUX中间件</a><ul>
+<li><a href="#mac-linux">mac linux</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+<hr>
+
+
+
+<h3 id="react">REACT</h3>
+
+<p><code>安装和使用react</code></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs dsconfig"><div class="hljs-line">$ <span class="hljs-string">npm </span><span class="hljs-string">install </span>-g <span class="hljs-built_in">create-react-app</span> //全局安装
+</div><div class="hljs-line">$ <span class="hljs-built_in">create-react-app</span> <span class="hljs-string">my-app </span>//创建<span class="hljs-string">react项</span>目
+</div><div class="hljs-line">$ <span class="hljs-string">cd </span><span class="hljs-string">my-app </span>//进入项目
+</div><div class="hljs-line">$ <span class="hljs-string">npm </span><span class="hljs-string">start </span>//启动服务
+</div></code></pre>
+
+<p>对象不是react的合法子元素</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-keyword">let</span> ele = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>{greeting(user)}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>;
+</div><div class="hljs-line"><span class="hljs-comment">// ｛｝中的值不能是对象</span>
+</div></code></pre>
+
+<p>当给React元素添加属性的时候，属性名跟原生的不一样，需要使用驼峰命名法，有些的属性比较特殊如class=&gt; className，for =&gt;htmlFor <br>
+style属性期待一个样式对象的映射，而不是字符串</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-keyword">let</span> ele = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+</span></div><div class="hljs-line">    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">tabIndex</span>=<span class="hljs-string">{1}</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+</div><div class="hljs-line">    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">tabIndex</span>=<span class="hljs-string">{3}</span>&gt;</span>2<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+</div><div class="hljs-line">    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">tabIndex</span>=<span class="hljs-string">{2}</span>&gt;</span>3<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+</div><div class="hljs-line">    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">{str}</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">""</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> '<span class="hljs-attr">150px</span>', <span class="hljs-attr">border:</span> '<span class="hljs-attr">10px</span> <span class="hljs-attr">solid</span> <span class="hljs-attr">rgba</span>(<span class="hljs-attr">0</span>,<span class="hljs-attr">0</span>,<span class="hljs-attr">0</span>,<span class="hljs-attr">0.3</span>)'}}/&gt;</span>
+</div><div class="hljs-line"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>;
+</div><div class="hljs-line">//ele是虚拟DOM，它是一个普通的JS对象，但是可以用来描述真实DOM，属性包含type,props(children)
+</div></code></pre>
+
+<p>react元素是不可变的，如果要更新的话需要创建新的元素</p>
+
+<blockquote>
+  <p>通过函数式定义组件</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Welcome</span>(<span class="hljs-params">props</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hello {props.name},Your age is {props.age}!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
+</div><div class="hljs-line">}
+</div><div class="hljs-line">
+</div><div class="hljs-line">ReactDOM.render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Welcome</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"abc"</span> <span class="hljs-attr">age</span>=<span class="hljs-string">"8"</span>/&gt;</span>,document.querySelector('#root'));
+</span></div><div class="hljs-line">// 渲染函数式组件的时候，会先把传入组件的属性包装成一个对象，传入组件函数，返回一个React元素
+</div></code></pre>
+
+<blockquote>
+  <p>通过类定义组件</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs scala"><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Welcome</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+</div><div class="hljs-line">    render() {
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> &lt;h1&gt;{<span class="hljs-keyword">this</span>.props.name}&lt;/h1&gt;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-comment">// 类通过继承React.Component就变成了组件，至少需要一个render方法用来返回react元素。</span>
+</div><div class="hljs-line"><span class="hljs-comment">// 类的名称首字母必须大写，因为ReactDom通过首字母来区分是React组件还是React元素</span>
+</div><div class="hljs-line"><span class="hljs-comment">// 如何渲染类级组件</span>
+</div><div class="hljs-line"><span class="hljs-comment">// 1、把所有传递给组件的属性封装成一个对象</span>
+</div><div class="hljs-line"><span class="hljs-comment">// 2、把属性对象传递给组件的构造函数，从而得到组件的实例</span>
+</div><div class="hljs-line"><span class="hljs-comment">// 3、调用实例的render方法得到React元素。</span>
+</div><div class="hljs-line"><span class="hljs-comment">// 4、由React DOM把React元素转换成真实的DOM对象并插入到页面中</span>
+</div><div class="hljs-line">
+</div><div class="hljs-line"><span class="hljs-type">ReactDOM</span>.render(&lt;<span class="hljs-type">Welcome</span> name=<span class="hljs-string">"abc"</span> age=<span class="hljs-string">"8"</span>/&gt;, document.querySelector('#root'));
+</div></code></pre>
+
+<blockquote>
+  <p>复合组件：必须且只能返回一个顶级元素。必须返回一个实际内容或Null，否则报错</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs ada"><div class="hljs-line"><span class="hljs-keyword">function</span> <span class="hljs-title">Welcome</span>(props) {
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> <span class="hljs-type">&lt;h1&gt;{props.name}&lt;/h1&gt;</span>;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>() {
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> <span class="hljs-type">(</span>
+</div><div class="hljs-line">        &lt;div&gt;
+</div><div class="hljs-line">            &lt;Welcome name=<span class="hljs-string">"ll"</span>/&gt;
+</div><div class="hljs-line">            &lt;Welcome name=<span class="hljs-string">"mm"</span>/&gt;
+</div><div class="hljs-line">            &lt;Welcome name=<span class="hljs-string">"nn"</span>/&gt;
+</div><div class="hljs-line">            &lt;Welcome name=<span class="hljs-string">"yy"</span>/&gt;
+</div><div class="hljs-line">        &lt;/div&gt;
+</div><div class="hljs-line">    );
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<blockquote>
+  <p><strong>纯函数</strong> <br>
+  1、永远不会试图修改输入的参数 <br>
+  2、相同的输入参数一定会产生相同的输出</p>
+</blockquote>
+
+<p>如果一个值或属性是不需要在render的时候使用，就不能放在state里，可以放在实例上</p>
+
+<p>只能用setState来修改state里面的属性，因为一旦调用 了setState方法，不但可以修改状态对象，还会自动重新调用render方法修改界面的显示效果。 <br>
+setState可以新增state字段，但是不能删除字段</p>
+
+<p>单向数据流：数据从上往下传递，父组件可以把父组件状态、属性或手工输入的值作为子组件的属性值</p>
+
+<p>在类组件里，除了生命周期函数和构造函数之外，其它函数里的this都指向undefined，解决this问题，可以在render里使用bind或constructor使用bind</p>
+
+<p><strong>与运算符&amp;&amp;</strong> <br>
+通过用花括号包裹代码在 JSX 中嵌入任何表达式 ，也包括 JavaScript 的逻辑与 &amp;&amp;，它可以方便地条件渲染一个元素。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Mailbox</span>(<span class="hljs-params">props</span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> unreadMessages = props.unreadMessages;
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> (
+</div><div class="hljs-line">    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+</span></div><div class="hljs-line">      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hello!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+</div><div class="hljs-line">      {unreadMessages.length &gt; 0 &amp;&amp;
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>
+</div><div class="hljs-line">          You have {unreadMessages.length} unread messages.
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+</div><div class="hljs-line">      }
+</div><div class="hljs-line">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</div><div class="hljs-line">  );
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p><strong>三目运算符</strong> <br>
+条件渲染的另一种方法是使用 JavaScript 的条件运算符 condition ? true : false。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs pf"><div class="hljs-line">render() {
+</div><div class="hljs-line">  const isLoggedIn = this.<span class="hljs-keyword">state</span>.isLoggedIn;
+</div><div class="hljs-line">  return (
+</div><div class="hljs-line">    <span class="hljs-variable">&lt;div&gt;</span>
+</div><div class="hljs-line">      The <span class="hljs-keyword">user</span> is <span class="hljs-variable">&lt;b&gt;</span>{isLoggedIn ? 'currently' : 'not'}&lt;/b&gt; logged <span class="hljs-keyword">in</span>.
+</div><div class="hljs-line">    &lt;/div&gt;
+</div><div class="hljs-line">  );
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p><strong>防止组件渲染</strong> <br>
+只需让render方法返回null即可实现</p>
+
+<p>componentDidMount <br>
+componentWillUnmount <br>
+<code>ReactDOM.unmountComponentAtNode( 卸载在某个节点的组件)</code>：从DOM元素中移除已挂载的React组件</p>
+
+<blockquote>
+  <p><strong>dataset：</strong> <br>
+  可以获取元素上的自定义属性 <br>
+  如：在元素上自定义一个data-field属性，可以通过[元素].dataset.field属性获取它的值</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Regform</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">constructor</span>() {
+</div><div class="hljs-line">        <span class="hljs-keyword">super</span>();
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.state = {<span class="hljs-attr">userName</span>: <span class="hljs-string">'s'</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">'s'</span>,<span class="hljs-attr">desc</span>:<span class="hljs-string">'ab'</span>,<span class="hljs-attr">value</span>:<span class="hljs-string">''</span>}
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">
+</div><div class="hljs-line">    save = <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> {
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.setState({[event.target.dataset.field]: event.target.value})
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">
+</div><div class="hljs-line">    render() {
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> (<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">onSubmit</span>=<span class="hljs-string">{this.output}</span>&gt;</span>
+</span></div><div class="hljs-line">            <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">htmlFor</span>=<span class="hljs-string">""</span>&gt;</span>用户名<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">required</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">{this.state.userName}</span> <span class="hljs-attr">onChange</span>=<span class="hljs-string">{this.save}</span> <span class="hljs-attr">data-field</span>=<span class="hljs-string">"userName"</span>/&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+</div><div class="hljs-line">
+</div><div class="hljs-line">
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span>)
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div><div class="hljs-line">
+</div></code></pre>
+
+<p><strong>children</strong>：子元素</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Panel</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+</div><div class="hljs-line">    render() {
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> (<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{border:</span> '<span class="hljs-attr">1px</span> <span class="hljs-attr">solid</span> <span class="hljs-attr">black</span>',<span class="hljs-attr">textAlign:</span>'<span class="hljs-attr">center</span>'}}&gt;</span>
+</span></div><div class="hljs-line">            {this.props.children} //使用时，可以给它传入子元素
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>)
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div><div class="hljs-line">
+</div><div class="hljs-line">ReactDOM.render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Panel</span>&gt;</span>
+</span></div><div class="hljs-line">    <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>a<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>b<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+</div><div class="hljs-line">    <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+</div><div class="hljs-line"><span class="hljs-tag">&lt;/<span class="hljs-name">Panel</span>&gt;</span>, <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#root'</span>));
+</div></code></pre>
+
+<blockquote>
+  <p>React.Children.map()可以迭代数组。</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Panel</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+</div><div class="hljs-line">    render() {
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> (<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{border:</span> '<span class="hljs-attr">1px</span> <span class="hljs-attr">solid</span> <span class="hljs-attr">black</span>', <span class="hljs-attr">textAlign:</span> '<span class="hljs-attr">center</span>'}}&gt;</span>
+</span></div><div class="hljs-line">            <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>{React.Children.map(this.props.children, (item, index) =&gt; {
+</div><div class="hljs-line">                return <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{index}</span>&gt;</span>{item}<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+</div><div class="hljs-line">            })}<span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>)
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div><div class="hljs-line">
+</div><div class="hljs-line">ReactDOM.render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Panel</span>&gt;</span>
+</span></div><div class="hljs-line">    <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>a<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>b<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+</div><div class="hljs-line">    <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+</div><div class="hljs-line"><span class="hljs-tag">&lt;/<span class="hljs-name">Panel</span>&gt;</span>, <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#root'</span>));
+</div></code></pre>
+
+<p>setState方法提供了回调函数</p>
+
+<p>PropTypes参数验证，需要先安装</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs stata"><div class="hljs-line">npm i <span class="hljs-keyword">prop</span>-types -<span class="hljs-built_in">S</span>
+</div></code></pre>
+
+<blockquote>
+  <p><a href="https://reactjs.org/docs/typechecking-with-proptypes.html" target="_blank">https://reactjs.org/docs/typechecking-with-proptypes.html</a></p>
+</blockquote>
+
+<p>react-router</p>
+
+<blockquote>
+  <p>npm install xxx 安装了一个模块的话 <br>
+  那么启动脚本就丢失了 <br>
+  所以永远 不要通过 npm install来安装模块 <br>
+  用yarn add xxx <br>
+  yarn add react-scripts</p>
+</blockquote>
+
+<p>安装react动画插件</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs dockerfile"><div class="hljs-line">yarn <span class="hljs-keyword">add</span><span class="bash"> react-transition-group
+</span></div><div class="hljs-line">
+</div></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs xml"><div class="hljs-line">// 使用exact，表示完全匹配这个路径
+</div><div class="hljs-line"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">exact</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/"</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Home}/</span>&gt;</span>
+</div></code></pre>
+
+<p>开发时使用HashRouter，上线时使用BrowerRouter</p>
+
+<p>props有三个属性：history、match、location</p>
+
+<ul><li>history <br>
+<ul>
+<li>push</li>
+<li>goBack</li>
+<li>goForward</li></ul></li>
+<li>match：匹配的是当前URL中的路径和当前路由的path属性的匹配结果 <br>
+<ul>
+<li></li></ul></li>
+<li>location <br>
+<ul>
+<li>pathname</li>
+<li>state</li></ul></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs pf"><div class="hljs-line">// 传递<span class="hljs-keyword">state</span>对象
+</div><div class="hljs-line"><span class="hljs-variable">&lt;Link to={{pathname:'/detail',state:{user:item}}}&gt;</span>{item.name}&lt;/Link&gt;
+</div></code></pre>
+
+<p>路由的渲染方式有三种： <br>
+1、component <br>
+2、使用render的方法，会把render的返回值渲染出来</p>
+
+<p>withRouter向指定的组件传入三个属性history、match、location</p>
+
+<p>render路径匹配则渲染，路径不匹配则不渲染；children不管路径是否匹配，都会渲染</p>
+
+<p><strong>NavLink路由库提供的</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs xml"><div class="hljs-line">  <span class="hljs-tag">&lt;<span class="hljs-name">NavLink</span> <span class="hljs-attr">to</span>=<span class="hljs-string">"/home"</span> <span class="hljs-attr">activeClassName</span>=<span class="hljs-string">"selected"</span>&gt;</span>首页<span class="hljs-tag">&lt;/<span class="hljs-name">NavLink</span>&gt;</span>
+</div></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs xml"><div class="hljs-line">// exact 表示绝对匹配
+</div><div class="hljs-line"> <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">exact</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/"</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Home}/</span>&gt;</span>
+</div></code></pre>
+
+<blockquote>
+  <p>withRouter的用法</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-comment">//使用withRouter会给函数传递一个由history/math/location组成的一个对象</span>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> Signout = withRouter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">props</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> (
+</div><div class="hljs-line">        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+</span></div><div class="hljs-line">            <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span>=&gt;</span>{
+</div><div class="hljs-line">                loginState.isLogin=false;
+</div><div class="hljs-line">                props.history.push('/');
+</div><div class="hljs-line">            }}&gt;退出登录<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</div><div class="hljs-line">    )
+</div><div class="hljs-line">});
+</div></code></pre>
+
+<blockquote>
+  <p>自定义路由组件，需要返回一个<code>Route</code>，然后可以通过render或children方法进行渲染。render只会把匹配到的路径进行渲染；而children会把所有的进行渲染，如果Link的路径与当前的路径不匹配，那么match没有任何东西。</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs actionscript"><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">PrivateRoute</span><span class="hljs-params">({component: Component, <span class="hljs-rest_arg">...rest</span>})</span> </span>{
+</div><div class="hljs-line">
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> (
+</div><div class="hljs-line">        &lt;Route {...rest} render={props =&gt; (
+</div><div class="hljs-line">            loginState.isLogin ? &lt;Component/&gt; :
+</div><div class="hljs-line">                &lt;Redirect to={{pathname: <span class="hljs-string">'/login'</span>, mm: props.location.pathname}}/&gt;
+</div><div class="hljs-line">        )}/&gt;
+</div><div class="hljs-line">    )
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>react中的setState是异步方法</p>
+
+<p><strong>cloneElement</strong>：可以传入3个参数，第一是被克隆的对象，第二个是新的属性对象，第三个是新的子元素，第二和第三个参数会替换原有数据</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs scala"><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Wrapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+</div><div class="hljs-line">    render() {
+</div><div class="hljs-line">        let children = <span class="hljs-keyword">this</span>.props.children;
+</div><div class="hljs-line">        let newEle = <span class="hljs-type">React</span>.cloneElement(children,{style:{color:<span class="hljs-symbol">'re</span>d'}},<span class="hljs-symbol">'worl</span>d'); <span class="hljs-comment">//克隆的时候可以传入新的属性，新的子元素</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> newEle
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>React.PureComponent：如果新的状态对象和旧的状态对象相等，则返回false</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs pf"><div class="hljs-line">//shouldComponentUpdate接收两个参数，一个是最新的props，另一个是最新的<span class="hljs-keyword">state</span>，这个函数返回布尔值，如果返回的是true则执行componentWillUpdate、render和componentDidUpdate。
+</div></code></pre>
+
+
+
+<h4 id="如何提高react组件的渲染效率">如何提高react组件的渲染效率</h4>
+
+<ul><li>给列表中的组件添加key属性</li>
+<li>子组件执行shouldComponentUpdate方法，自行决定是否更新</li>
+</ul>
+
+<blockquote>
+  <p>react 15.3.0新增了一个PureComponent类，以es2015的方式方便地定义纯组件，用于取代之前的PureRenderMixin。 <br>
+  <strong>注意：</strong><code>PureComponent和PureRenderMixin都是浅比较，如果对象包含了复杂的数据结构，深层次的差异可能会产生误判</code></p>
+</blockquote>
+
+
+
+<h4 id="redux">redux</h4>
+
+<p><strong>安装redux</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs dockerfile"><div class="hljs-line">$ yarn <span class="hljs-keyword">add</span><span class="bash"> redux</span>
+</div></code></pre>
+
+<p><strong>引入redux</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs clean"><div class="hljs-line">$ <span class="hljs-keyword">import</span> {createStore} <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>
+</div></code></pre>
+
+<p><strong>创建Store时需要给createStore传递一个reducer函数，因此先创建reducer函数</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs pf"><div class="hljs-line">// reducer需要<span class="hljs-number">2</span>个参数，第一个是Store传给它的状态（使用时需要初始化<span class="hljs-keyword">state</span>，例：<span class="hljs-keyword">state</span>=<span class="hljs-number">0</span>）。第二个是执行的动作action，action是一个对象，里面有type属性，用来指定动作，action可以添加其它属性。
+</div><div class="hljs-line">//一定要写<span class="hljs-keyword">default</span>，用来初始化仓库的
+</div><div class="hljs-line">let reducer=( <span class="hljs-keyword">state</span>=<span class="hljs-number">0</span>, action )=&gt;{
+</div><div class="hljs-line">    switch(action.type){
+</div><div class="hljs-line">        case 'add':
+</div><div class="hljs-line">            return <span class="hljs-keyword">state</span>+<span class="hljs-number">1</span>;
+</div><div class="hljs-line">        <span class="hljs-keyword">default</span>:
+</div><div class="hljs-line">            return <span class="hljs-keyword">state</span>;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p><strong>创建仓库</strong> <br>
+创建一个仓库</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs pony"><div class="hljs-line"><span class="hljs-keyword">let</span> store = <span class="hljs-function"><span class="hljs-keyword">new</span> <span class="hljs-title">createStore</span>(reducer);</span>
+</div></code></pre>
+
+<p><strong>获取仓库里的state</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs pf"><div class="hljs-line">store.getState();//使用这个可以获取仓库里的<span class="hljs-keyword">state</span>
+</div></code></pre>
+
+<p><strong>执行动作</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs elm"><div class="hljs-line">//给dispatch传入一个action对象，包含<span class="hljs-keyword">type</span>，用来指定执行的动作，可以action对象添加自定义属性，让reducer进行处理
+</div><div class="hljs-line"><span class="hljs-title">store</span>.dispatch({<span class="hljs-keyword">type</span>:'add',payload:1})
+</div></code></pre>
+
+<p><strong>订阅仓库</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs coffeescript"><div class="hljs-line"><span class="hljs-regexp">//</span>通过subscribe来订阅
+</div><div class="hljs-line">store.subscribe(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.setState({num:store.getState()})
+</div><div class="hljs-line">})
+</div></code></pre>
+
+<p><strong>REACT路由传参</strong> <br>
+<a href="http://reacttraining.cn/web/example/url-params" target="_blank">http://reacttraining.cn/web/example/url-params</a></p>
+
+<blockquote>
+  <p>给react路由传递参数，路由会将路由对象传递给组件，传递的参数放在了路由对象中的match.params上了。</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-keyword">const</span> ParamsExample = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+</div><div class="hljs-line">  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Router</span>&gt;</span>
+</span></div><div class="hljs-line">    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+</div><div class="hljs-line">      <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>账号<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+</div><div class="hljs-line">      <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
+</div><div class="hljs-line">        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">to</span>=<span class="hljs-string">"/reacttraining"</span>&gt;</span>React Training<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+</div><div class="hljs-line">      <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+</div><div class="hljs-line">      <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/:id"</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Child}/</span>&gt;</span>
+</div><div class="hljs-line">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</div><div class="hljs-line">  <span class="hljs-tag">&lt;/<span class="hljs-name">Router</span>&gt;</span>
+</div><div class="hljs-line">)
+</div><div class="hljs-line">
+</div><div class="hljs-line">const Child = ({ match }) =&gt; (
+</div><div class="hljs-line">  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+</div><div class="hljs-line">    <span class="hljs-tag">&lt;<span class="hljs-name">h3</span>&gt;</span>ID: {match.params.id}<span class="hljs-tag">&lt;/<span class="hljs-name">h3</span>&gt;</span>
+</div><div class="hljs-line">  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</div><div class="hljs-line">)
+</div></code></pre>
+
+<p><strong>onSubmit事件要写在表单上</strong></p>
+
+
+
+<h2 id="redux中间件">REDUX中间件</h2>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs cmake"><div class="hljs-line">$ npm <span class="hljs-keyword">install</span> redux-logger redux-thunk redux-promise -S
+</div></code></pre>
+
+<p>使用中间件时，logger要放在最后</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs clean"><div class="hljs-line"><span class="hljs-keyword">import</span> logger <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-logger'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> thunk <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-thunk'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> promise <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-promise'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> store = createStore(reducer, applyMiddleware(thunk, promise, logger));
+</div></code></pre>
+
+<p><strong>限流和防抖</strong></p>
+
+<p><strong>react-router-redux</strong> <br>
+<a href="https://github.com/ReactTraining/react-router/tree/master/packages/react-router-redux" target="_blank">https://github.com/ReactTraining/react-router/tree/master/packages/react-router-redux</a></p>
+
+<p>mongodb</p>
+
+<p>win10:powershell下 ./mongod –dbpath=E:\bbb <br>
+cmd下mongod –dbpath=e:\bbb</p>
+
+<p>启动mongo，cmd下输入 mongo，Powershell下输入./mongo</p>
+
+<p>git bash </p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs nginx"><div class="hljs-line"><span class="hljs-attribute">ssh</span> root<span class="hljs-variable">@ip</span>
+</div></code></pre>
+
+<p>查看占用端口号 <br>
+netstat -auto | findstr ‘8080’</p>
+
+
+
+<h3 id="mac-linux">mac linux</h3>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs lsl"><div class="hljs-line">ps -ef|grep <span class="hljs-number">8080</span>
+</div><div class="hljs-line">kill <span class="hljs-number">-9</span> <span class="hljs-number">9080</span>
+</div></code></pre></div></body></html>
